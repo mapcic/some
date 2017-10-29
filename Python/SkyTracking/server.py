@@ -1,16 +1,24 @@
 from flask import Flask
+
+import apiMath as math
+import apiStat as stat
+
 app = Flask(__name__)
 
-@app.route("/")
+@app.route('/')
 def hello():
-    return "Hello World!"
+    return 'Hello World!'
 
-@app.route("/math", methods=['GET', 'POST'])
-def someMath():
-	return "exec func"
+@app.route('/math/<method>', methods=['POST'])
+def math(method):
+	resp = None
 
-@app.route("/stat")
+    return resp
 
+@app.route('/stat', methods=['GET'])
+def stat():
+	resp = None
+	return resp
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run()
