@@ -1,0 +1,30 @@
+{
+  "name": "workwithxml",
+  "version": "0.0.1",
+  "description": "Parse XML Document",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mapcic/some.git"
+  },
+  "keywords": [
+    "js",
+    "babel",
+    "xml"
+  ],
+  "author": "mapcic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mapcic/some/issues"
+  },
+  "homepage": "https://github.com/mapcic/some#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^3.8.1"
+  }
+}
