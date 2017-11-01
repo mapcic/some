@@ -1,1 +1,1 @@
-import test from './axp';
+import * as axp from './axp';

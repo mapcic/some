@@ -76,6 +76,8 @@ var _axp2 = _interopRequireDefault(_axp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+(0, _axp2.default)();
+
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -84,7 +86,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 
 function test() {
-	alert('I`m alive!');
+	console.log('I`m die!');
 }
 
 module.exports = test;

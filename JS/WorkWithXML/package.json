@@ -4,7 +4,10 @@
   "description": "Parse XML Document",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --progress -p",
+    "watch": "webpack --progress --watch",
+    "server": "webpack-dev-server --open"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,7 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-es2016": "^6.24.1",
     "webpack": "^3.8.1"
   }
 }
