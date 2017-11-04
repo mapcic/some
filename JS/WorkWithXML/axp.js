@@ -1,4 +1,4 @@
-export class AXPApp {
+class AXPApp {
 	constructor(config = {}) {
 		this.config = config;
 
@@ -32,7 +32,7 @@ export class AXPFactory {
 	}
 }
 
-export class AXPView {
+class AXPView {
 	constructor(app) {
 		this.html = '';
 		this.components = ['status', 'response'];
@@ -52,7 +52,7 @@ export class AXPView {
  	}
 }
 
-export class AXPHtml {
+class AXPHtml {
 	constructor() {
 		this.html = '';
 		this.element = '';
@@ -64,22 +64,33 @@ export class AXPHtml {
 }
 
 let _status_count = 0;
-export class AXPHtmlStatus extends AXPHtml {
+class AXPHtmlStatus extends AXPHtml {
 	constructor() {
 		super();
 		this.id = _status_count++;
 		this.name = this.constructor.name;
 
 		this.html = `<div class="${this.name}" id="${this.name+this.id}">` +
+				'<h2>XML file:</h2>' +
 				'<input>' +
 				'<button>analyze</button>'+
 			'</div>';
-		// this.element = (new AXPDocumentsHtml()).createNode(this.html);
 		this.element = AXPDocumentsHtml.createNode(this.html);
  	}
 
  	set(value) {
  		var input = this.element.getElementsByTagName('input')[0];
+ 		input.value = value;
+ 	}
+
+ 	val( value = null ) {
+ 		var input = this.element.getElementsByTagName('input')[0];
+
+ 		if ( value == null ) { 
+ 			return input.value;
+ 		}
+
+
  		input.value = value;
  	}
 
@@ -91,18 +102,18 @@ export class AXPHtmlStatus extends AXPHtml {
 }
 
 let _response_count = 0;
-export class AXPHtmlResponse extends AXPHtml {
+class AXPHtmlResponse extends AXPHtml {
 	constructor() {
 		super();
 		this.id = _response_count++;
 		this.name = this.constructor.name;
 
 		this.html = `<div id="${this.name}${this.id}" class="${this.name}">`+
+				'<h2>XML file info:</h2>' +
 				'<div class="title"></div>'+
 				'<div class="responses"></div>'+
 			'</div>';
 		this.element = AXPDocumentsHtml.createNode(this.html);
-		// this.element = (new AXPDocumentsHtml()).createNode(this.html);
 	}
 
 	add(str) {
@@ -140,32 +151,36 @@ class AXPController {
 		xml = pattern.exec(request);
 		xml = xml? xml[1] : xml;
 
-		view.getComponent('status').set(xml);
+		view.getComponent('status').val(xml);
 		view.getComponent('status').onclick(()=>{this.task()});
 	}
 
 	task() {
 		var model = this.app.getModel(),
-			resp = this.app.getView().getComponent('response');
+			resp = this.app.getView().getComponent('response'),
+			xml = this.app.getView().getComponent('status').val();
 
-		AXPDocumentsXml.loadXML('/test.xml')
+		AXPDocumentsXml.loadXML(xml)
 			.then( response => {
 				return new Promise( (resolve, reject) => {
-					var data = model.task1(response.xml);
+					var data = model.task1(response);
 					console.log(`Inside href count is ${data}`);
 					resp.add(`Inside href count is ${data}`)
 					resolve(response);
+				},
+				response => {
+					console.log(123);	
 				})
 			}).then( response => {
 				return new Promise( (resolve, reject) => {
-					var data = model.task2(response.xml);
+					var data = model.task2(response);
 					console.log(`Count chapters in ALL XML (include body and another) is ${data}`);
 					resp.add(`Count chapters in ALL XML (include body and another) is ${data}`);
 					resolve(response);
 				})
 			}).then( response => {
 				return new Promise( (resolve, reject) => {
-					var data = model.task3(response.xml);
+					var data = model.task3(response);
 					console.log(`Number of broken links is ${data}`);
 					resp.add(`Number of broken links is ${data}`);
 					resolve(response);
@@ -182,13 +197,13 @@ class AXPModel {
 	task1(xml) {
 		var numHref = 0;
 
-		numHref = xml.querySelectorAll('a[href^="#"]').length;
+		numHref = xml.find('a[href^="#"]').length;
 
 		return numHref;
 	}
 
 	task2(xml) {
-		var elements = [...xml.querySelectorAll('*')], 
+		var elements = [...xml.find('*')], 
 			numLetters = 0;
 
 		while (true) {
@@ -205,7 +220,7 @@ class AXPModel {
 	}
 
 	task3(xml) {
-		var hrefs = [...xml.querySelectorAll('a[href^="#"]')], 
+		var hrefs = [...xml.find('a[href^="#"]')], 
 			numBroken = 0;
 
 		while (true) {
@@ -215,22 +230,12 @@ class AXPModel {
 				break;
 			}
 
-			if ( !xml.querySelectorAll(href.getAttribute('href')).length ) {
+			if ( !xml.find(href.getAttribute('href')).length ) {
 				numBroken++;
 			}
 		}
 
 		return numBroken;
-	}
-}
-
-class AXPParse {
-	constructor() {}
-}
-
-class AXPParseXml extends AXPParse {
-	constructor() {
-		super();
 	}
 }
 
@@ -240,7 +245,7 @@ class AXPDocuments {
 	}
 }
 
-export class AXPDocumentsXml extends AXPDocuments{
+class AXPDocumentsXml extends AXPDocuments{
 	constructor(doc) {
 		var parser = new DOMParser(),
 			xml = parser.parseFromString(doc, "text/xml");
@@ -264,18 +269,21 @@ export class AXPDocumentsXml extends AXPDocuments{
 					console.log('xml loaded');
 					resolve(new AXPDocumentsXml(this.response));
 				} else {
-					let error = new Error(this.statusText);
-					error.code = this.status;
-					reject(error);
+					console.log('xml not found');
+					reject('xml not found');
 				}
 			};
 
 			xhr.onerror = function() {
-				reject(new Error("Network Error"));
+				reject('xml not found');
 			};
 
 			xhr.send();
 		});
+	}
+
+	find(selector) {
+		return [...this.xml.querySelectorAll(selector)];
 	}
 
 }
