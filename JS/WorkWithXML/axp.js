@@ -74,12 +74,13 @@ export class AXPHtmlStatus extends AXPHtml {
 				'<input>' +
 				'<button>analyze</button>'+
 			'</div>';
-		this.element = (new AXPDocumentsHtml()).createNode(this.html);
+		// this.element = (new AXPDocumentsHtml()).createNode(this.html);
+		this.element = AXPDocumentsHtml.createNode(this.html);
  	}
 
  	set(value) {
- 		var input = this.element.getElementsByTagName('input');
- 		input[0].value = value;
+ 		var input = this.element.getElementsByTagName('input')[0];
+ 		input.value = value;
  	}
 
  	onclick(func) {
@@ -98,10 +99,18 @@ export class AXPHtmlResponse extends AXPHtml {
 
 		this.html = `<div id="${this.name}${this.id}" class="${this.name}">`+
 				'<div class="title"></div>'+
-				'<div class="response"></div>'+
+				'<div class="responses"></div>'+
 			'</div>';
-		this.element = (new AXPDocumentsHtml()).createNode(this.html);
+		this.element = AXPDocumentsHtml.createNode(this.html);
+		// this.element = (new AXPDocumentsHtml()).createNode(this.html);
 	}
+
+	add(str) {
+		var resps = this.element.getElementsByClassName('responses')[0],
+			resp = `<div class="response">${str}</div>`;
+
+		(new AXPDocumentsHtml(resps)).append(AXPDocumentsHtml.createNode(resp));
+	} 
 }
 
 class AXPController {
@@ -112,7 +121,6 @@ class AXPController {
 	run() {
 		this.render();
 		this.init();
-		// this.watchEvents();
 	}
 
 	render() {
@@ -137,39 +145,32 @@ class AXPController {
 	}
 
 	task() {
-		var model = this.app.getModel();
+		var model = this.app.getModel(),
+			resp = this.app.getView().getComponent('response');
 
 		AXPDocumentsXml.loadXML('/test.xml')
 			.then( response => {
 				return new Promise( (resolve, reject) => {
-					var data = model.task1(response.doc);
-					console.log(data);
+					var data = model.task1(response.xml);
+					console.log(`Inside href count is ${data}`);
+					resp.add(`Inside href count is ${data}`)
 					resolve(response);
 				})
 			}).then( response => {
 				return new Promise( (resolve, reject) => {
-					var data = model.task2(response.doc);
-					console.log(data);
+					var data = model.task2(response.xml);
+					console.log(`Count chapters in ALL XML (include body and another) is ${data}`);
+					resp.add(`Count chapters in ALL XML (include body and another) is ${data}`);
 					resolve(response);
 				})
 			}).then( response => {
 				return new Promise( (resolve, reject) => {
-					var data = model.task3(response.doc);
-					console.log(data);
+					var data = model.task3(response.xml);
+					console.log(`Number of broken links is ${data}`);
+					resp.add(`Number of broken links is ${data}`);
 					resolve(response);
 				})
 			})
-	}
-
-	watchEvents() {
-		var view = this.app.get('View');
-
-		view.get('status').on('click', this.analyze);
-	}
-
-	analyze() {
-		var pr = new Promise,
-			model = this.app.get('Model');
 	}
 }
 
@@ -179,27 +180,47 @@ class AXPModel {
 	}
 
 	task1(xml) {
-		var parser = new DOMParser(), 
-			xmlDoc = parser.parseFromString(xml, "text/xml"),
-			numHref = 0;
+		var numHref = 0;
 
-		numHref = xmlDoc.querySelectorAll('a[href^="#"]').length;
+		numHref = xml.querySelectorAll('a[href^="#"]').length;
 
 		return numHref;
 	}
 
 	task2(xml) {
-		var parser = new DOMParser(), 
-			xmlDoc = parser.parseFromString(xml, "text/xml"),
-			numChapter = 0;
+		var elements = [...xml.querySelectorAll('*')], 
+			numLetters = 0;
 
-		numChapter = xmlDoc.wholeText;
+		while (true) {
+			let elem = elements.pop();
 
-		return numChapter;
+			if (!elem) {
+				break;
+			}
+
+			numLetters += elem.textContent.length;
+		}
+
+		return numLetters;
 	}
 
 	task3(xml) {
-		return 3;
+		var hrefs = [...xml.querySelectorAll('a[href^="#"]')], 
+			numBroken = 0;
+
+		while (true) {
+			let href = hrefs.pop();
+
+			if (!href) {
+				break;
+			}
+
+			if ( !xml.querySelectorAll(href.getAttribute('href')).length ) {
+				numBroken++;
+			}
+		}
+
+		return numBroken;
 	}
 }
 
@@ -221,20 +242,11 @@ class AXPDocuments {
 
 export class AXPDocumentsXml extends AXPDocuments{
 	constructor(doc) {
-		var xml;
-
+		var parser = new DOMParser(),
+			xml = parser.parseFromString(doc, "text/xml");
+		
 		super(doc);
-
-		// if (window.XMLHttpRequest) {  
-		// 	xml = new window.XMLHttpRequest();  
-		// 	xml.open("GET", this.doc, false).send("");  
-		// 	this.doc = xml.responseXML;  
-		// } else {
-		// 	xml = new ActiveXObject("Microsoft.XMLDOM");  
-		// 	xml.async = false;  
-		// 	xml.load(this.doc);  
-		// 	this.doc = xml;  
-		// }  
+		this.xml = xml;
 	}
 
 	static loadXML(doc = null) {
@@ -249,7 +261,7 @@ export class AXPDocumentsXml extends AXPDocuments{
 
 			xhr.onload = function() {
 				if (this.status == 200) {
-					console.log('good');
+					console.log('xml loaded');
 					resolve(new AXPDocumentsXml(this.response));
 				} else {
 					let error = new Error(this.statusText);
@@ -281,7 +293,7 @@ class AXPDocumentsHtml extends AXPDocuments{
 		}
 	}
 
-	createNode(html) {
+	static createNode(html) {
         var div = document.createElement('div');
         
         div.innerHTML = html;
