@@ -1,8 +1,8 @@
 module.exports = {
-	entry: './js/index.js',
+	entry: './index.js',
 	output: {
 		filename: 'bundle.js'
-	}
+	},
 	module: {
 		rules: [{
 			test: /\.js$/,

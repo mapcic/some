@@ -1,0 +1,1 @@
+// import 'PIXI' as px;
