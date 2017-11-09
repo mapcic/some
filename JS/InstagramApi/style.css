@@ -1,3 +1,51 @@
 body {
-    background: grey;
-};
+    /*background: grey;*/
+}
+
+div.post {
+	/*height: 450px;*/
+	width: 300px;
+	overflow: hidden;
+	float: left;
+	padding-top: 50px;
+	padding-left: 50px;
+}
+
+div.logo {
+	height: 40px;
+	width: 40px;
+	border-radius: 50%;
+	padding-right: 10px;
+}
+
+div.head {
+	margin: 12px;
+	overflow: hidden;
+}
+
+div.head > div {
+	float: left;
+}
+
+div.head div.date {
+	float: right;
+}
+
+div.logo img{
+    max-width: 100%;
+    max-height: 100%;
+	border-radius: 50%;
+}
+
+div.img {
+	width: 100%;
+}
+
+div.img img{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+div.desc {
+	margin: 12px;
+}
