@@ -1,14 +1,13 @@
-body {
-    /*background: grey;*/
+div.author {
+	font-weight:bold;
 }
 
 div.post {
-	/*height: 450px;*/
 	width: 300px;
 	overflow: hidden;
 	float: left;
-	padding-top: 50px;
-	padding-left: 50px;
+	margin : 30px;
+	box-shadow: 0 0 5px grey;
 }
 
 div.logo {
@@ -21,14 +20,40 @@ div.logo {
 div.head {
 	margin: 12px;
 	overflow: hidden;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+div.info {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	flex-grow : 1;
+}
+
+div.about {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 div.head > div {
-	float: left;
+	font-size: 10pt;
 }
 
-div.head div.date {
-	float: right;
+div.author {
+	flex-grow : 1;
+}
+
+div.author, div.location {
+	display: flex;
+	align-items: center;
+}
+
+div.date {
+	align-self: center;
+	color: grey;
 }
 
 div.logo img{
@@ -48,4 +73,11 @@ div.img img{
 
 div.desc {
 	margin: 12px;
+	margin-bottom: 30px;
+	font-size: 9pt;
+}
+
+div.likes {
+	margin: 10px 0;
+	font-size: 10pt;
 }

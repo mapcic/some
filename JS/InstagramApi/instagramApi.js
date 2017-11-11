@@ -19,7 +19,7 @@ export class View {
 	}
 
 	addPost(post) {
-		this.present.append(post);
+		this.present.appendChild(post);
 	}
 
 	getPresent() {
@@ -33,7 +33,7 @@ export class Controller {
 	}
 
 	render() {
-		document.body.append(this.app.view.getPresent());
+		document.body.appendChild(this.app.view.getPresent());
 	}
 
 	showPosts(instagram) {
@@ -80,7 +80,7 @@ export class Model {
 			post.author = data.user.username;
 			post.location = !data.location? '' : data.location.name;
 			post.date = this.getDifferentTime(now, data.caption? +data.caption.created_time: +data.created_time);
-			post.img = data.images.standard_resolution.url;
+			post.img = data.images.low_resolution.url;
 			post.likes = data.likes.count;
 			post.msg =  data.caption? data.caption.text : '';
 
@@ -155,10 +155,12 @@ class HtmlElementPost extends HtmlElement {
 					<img src="${params.logo}">
 				</a></div>
 				<div class="info">
-					<div class="author">${params.author}</div>
-					<div class="location">${params.location}</div>
+					<div class="about">
+						<div class="author"><span>${params.author}</span></div>
+						<div class="location"><span>${params.location}</span></div>
+					</div>	
+					<div class="date">${params.date}</div>
 				</div>	
-				<div class="date">${params.date}</div>
 			</div>
 			<div class="img">
 				<img src="${params.img}">
