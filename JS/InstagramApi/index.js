@@ -4,7 +4,7 @@ var data = require('./instagram_data.json');
 
 console.log(data);
 
-var app = new ia.App();
+var app = ia.Factory.getApp({json : data});
 
 app.controller.render();
-app.controller.showPosts(data);
+app.controller.start();

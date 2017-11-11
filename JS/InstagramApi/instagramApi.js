@@ -1,4 +1,29 @@
+var app,
+	session;	
+
 export class Factory {
+	static getApp(config) {
+		app = new App();
+		session = new Session();
+
+		if (config.json) {
+			session.set('posts', app.model.parseInstagramData(config.json));
+		}
+		
+		return app;
+	}
+}
+
+class Session {
+	constructor() {}
+
+	set(name, val) {
+		this[name] = val;
+	}
+
+	get(name) {
+		return this[name]? this[name] : null;
+	}
 }
 
 export class App {
@@ -12,19 +37,31 @@ export class App {
 export class View {
 	constructor(app) {
 		this.app = app;
-		this.elements = [];
+		this.columns = [];
 
 		this.html = `<div class="InstagramApi"></div>`;
 		this.present = HtmlElement.createNode(this.html);
 	}
 
-	addPost(post) {
-		this.present.appendChild(post);
+	addColumn(column) {
+		this.columns.push(column);
+		this.present.appendChild(column);
+	}
+
+	removeColumns() {
+		while (true) {
+			let column = this.columns.pop();
+			if (!column) {
+				break;
+			}
+			column.remove();
+		}
 	}
 
 	getPresent() {
 		return this.present;
 	}
+
 }
 
 export class Controller {
@@ -33,28 +70,70 @@ export class Controller {
 	}
 
 	render() {
-		document.body.appendChild(this.app.view.getPresent());
+		var width = document.body.clientWidth,
+			widthColumn = HtmlElementColumn.getWidth(),
+			ratio = Math.floor(width/widthColumn),
+			isMob = ratio < 2,
+			view = this.app.view,
+			posts = session.get('posts');
+
+		view.removeColumns();
+
+		if ( !document.body.querySelector('.InstagramApi') ) {
+			document.body.appendChild(this.app.view.getPresent());
+		}
+
+		if (isMob) {
+			this.app.view.getPresent().classList.add('mob');
+			ratio = 1;
+		} else {
+			this.app.view.getPresent().classList.remove('mob');
+		}
+
+		var number = Math.floor(posts.length/ratio),
+			remain = posts.length%ratio,
+			start = number*0,
+			end = start + number - 1 + (remain--? 0 : 1);
+
+		for (let i = 0; i < ratio; i++) {
+			let partOfPosts = posts.slice(start, end),
+				column = new HtmlElementColumn(partOfPosts);
+
+			start = start + number;
+			end = start + number - 1;
+
+			view.addColumn(column.getNode());
+		}
 	}
 
-	showPosts(instagram) {
-		var app = this.app,
-			model = app.model,
-			view = app.view;
+	start() {
+		window.addEventListener('resize', event => {
+			this.onResize();
+		});
 
-		var params = model.parseInstagramData(instagram);
-
-		// console.log(params);
-		while (true) {
-			let param = params.shift();
-
-			if (!param) {
-				break;
-			}
-
-			let post = new HtmlElementPost(param);
-
-			view.addPost(post.getNode());
+		var likes = [...document.querySelectorAll('.likes')];
+		for (var i = likes.length - 1; i >= 0; i--) {
+			likes[i].addEventListener('click', this.onClick);
 		}
+
+	}
+
+	onResize(event) {
+		var timer = session.get('timer');
+		
+		if (timer) {
+			clearTimeout(timer);
+		}
+
+		timer = setTimeout(()=>{
+			this.render();
+		}, 500);
+
+		session.set('timer', timer);
+	}
+
+	onClick(event) {
+		alert(this.id);
 	}
 }
 
@@ -68,23 +147,17 @@ export class Model {
 			now = (new Date()).getTime(),
 			posts = [];
 
-		while (true) {
-			let data = datas.shift(),
-				post = {};
+		for (var i = 0; i < datas.length; i++) {
+			let post = {};
 
-			if (!data) {
-				break
-			}
-
-			post.logo = data.user.profile_picture;
-			post.author = data.user.username;
-			post.location = !data.location? '' : data.location.name;
-			post.date = this.getDifferentTime(now, data.caption? +data.caption.created_time: +data.created_time);
-			post.img = data.images.low_resolution.url;
-			post.likes = data.likes.count;
-			post.msg =  data.caption? data.caption.text : '';
-
-			console.log(post);
+			post.logo = datas[i].user.profile_picture;
+			post.author = datas[i].user.username;
+			post.location = !datas[i].location? '' : datas[i].location.name;
+			post.date = this.getDifferentTime(now, datas[i].caption? +datas[i].caption.created_time: +datas[i].created_time);
+			post.img = datas[i].images.low_resolution.url;
+			post.likes = datas[i].likes.count;
+			post.msg =  datas[i].caption? datas[i].caption.text : '';
+			post.id = datas[i].id;
 
 			posts.push(post);
 		}
@@ -145,6 +218,29 @@ class HtmlElement {
 	}
 }
 
+class HtmlElementColumn extends HtmlElement {
+	constructor(posts) {
+		super();
+
+		this.width = HtmlElementColumn.getWidth();
+
+		this.html = `<div class="column" style="width: ${this.width}px"></div>`;
+		this.element = HtmlElement.createNode(this.html);
+		this.posts = posts;
+
+		for (var i = 0; i < this.posts.length; i++) {
+			let post = new HtmlElementPost(this.posts[i]);
+			this.element.appendChild(post.getNode());
+		}
+	}
+
+	static getWidth() {
+		var width = 350;
+
+		return width;
+	}
+}
+
 class HtmlElementPost extends HtmlElement {
 	constructor(params) {
 		super();
@@ -166,7 +262,7 @@ class HtmlElementPost extends HtmlElement {
 				<img src="${params.img}">
 			</div>
 			<div class="desc">
-				<div class="likes"><i></i>${params.likes}</div>
+				<div id="${params.id}" class="likes">&#9825;${params.likes}</div>
 				<div class="msg">${params.msg}</div>
 			</div>
 		</div>`;

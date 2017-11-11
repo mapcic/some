@@ -1,3 +1,20 @@
+body {
+	margin : 0;
+	position: absolute;
+	width: 100%;
+}
+
+div.InstagramApi {
+	display: flex;
+	flex-direction: row;
+}
+
+div.column {
+	display: flex;
+	flex-direction: column;
+	padding: 25px;
+}
+
 div.author {
 	font-weight:bold;
 }
@@ -5,8 +22,7 @@ div.author {
 div.post {
 	width: 300px;
 	overflow: hidden;
-	float: left;
-	margin : 30px;
+	margin : 15px 0;
 	box-shadow: 0 0 5px grey;
 }
 
@@ -67,8 +83,8 @@ div.img {
 }
 
 div.img img{
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 div.desc {
@@ -80,4 +96,31 @@ div.desc {
 div.likes {
 	margin: 10px 0;
 	font-size: 10pt;
+}
+
+.mob .post {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+
+	width: 650px;
+	height: 320px;
+}
+
+.mob .img {
+	width: 320px;
+	min-height: 320px;
+	height: 320px;
+	overflow: hidden;
+	order : 0;
+}
+
+.mob .head {
+	order: 1;
+	border-bottom: 1px solid #e6e6e6;
+}
+
+.mob .desc {
+	order: 2;
+	width: 310px;
 }
