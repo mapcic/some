@@ -13,10 +13,12 @@ module.exports = {
 					presets: ['env']
 				}
 			}
-		}],
+		}]
+	},
+    module: {
         loaders: [{ 
         	test: /\.css$/, 
         	loader: "style-loader!css-loader" 
         }]
-	}
+    }
 };
