@@ -1,0 +1,11 @@
+table, tr, td {
+   border: 1px solid black;
+}
+
+tr.highlightingRow {
+	background: green;
+}
+
+tr.hide {
+	display: none;
+}

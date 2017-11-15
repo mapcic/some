@@ -4,6 +4,8 @@ export default class PresentData {
 
 		this.view = document.createElement(`div`);
 		this.table = document.createElement(`table`);
+		this.tHead = document.createElement(`thead`);
+		this.tBody = document.createElement(`tbody`);
 		this.search = document.createElement(`input`);
 
 		this.keyTimeout = 0;
@@ -11,74 +13,143 @@ export default class PresentData {
 		this.view.appendChild(this.search);
 		this.view.appendChild(this.table);
 
+		this.table.appendChild(this.tHead);
+		this.table.appendChild(this.tBody);
+
+		this.hRow = [];
 		this.rows = [];
 		this.columns = [];
+
+		this.content = [];
 	}
 
-	seatHead(head) {
-		this.head = head instanceof Array? head : [...head];
-	}
+	setHead(head = null) {
+		this.head = head instanceof Array? head : [head];
 
-	getHead() {
-		return this.head;
+		if (head == null) {
+			this.head = this.data.getHead();
+		}
+
+		this.data.setHead(this.head);
+		this._insertData();
 	}
 
 	setData(data) {
 		this.data = Data.getContainer(this.type, data);
-		this.data.setHead(this.head);
-
-		var data = this.data.getData();
-
-		console.log(data);
-
-		for (var i = 0; i < this.data.length; i++) {
-			let row = (this.data[i].map((val) => `<td>${val}<td>`)).join('');
-			row = `<tr>${row}</tr>`;
-
-			this.rows.pop(this.createNode(row));
-			this.table.appendChild(this.rows[this.rows.length-1]);
-		}
-
-		console.log(this.table);
-	}
-
-	createNode(html) {
-		var div = document.createElement('div');
-
-		div.innerHTML = html;
-
-		return div.firstChild;
+		this._insertData();
+		this.setHead();
 	}
 
 	render(info) {
 		document.body.appendChild(this.view);
-		// this.enableEvents();
+		this.enableEvents();
 	}
 
 	enableEvents() {
 		this.rows.forEach((val, ind)=>{
 			val.addEventListener('click', event => {
-				this.highlightingRow(event);
+				this._highlightingRow(event);
 			});
 		}, this);
 
 		this.search.addEventListener('keydown', event => {
-			this.filterRow(event);
+			clearTimeout(this.keyTimeout);
+			
+			if (event.which == 13) {
+				this._filterRow(event);
+			} else {
+				this.keyTimeout = setTimeout(()=>{
+					this._filterRow(event);
+				}, 1000);
+			}
 		});
 	}
 
-	highlightingRow(event) {
+	_insertData() {
+		var data = this.data.getData(),
+			head = this.data.getHead();
+
+		this._clearData();
+
+		this.content = data;
+
+		head = head.map(title => `<td>${title}</td>`).join('');
+		head = `<tr>${head}</tr>`;
+
+		this.hRow.push(this._createRow(head));		
+		this.tHead.append(this.hRow[this.hRow.length-1]);
+
+		for (let i = 0; i < data.length; i++) {
+			let row = (data[i].map((val) => `<td>${val}</td>`)).join('');
+			row = `<tr>${row}</tr>`;
+
+			this.rows.push(this._createRow(row));		
+			this.tBody.append(this.rows[this.rows.length-1]);
+		}
+	}
+
+	_clearData() {
+		while (true) {
+			let row = this.rows.pop();
+
+			if (!row) {
+				break;
+			}
+
+			row.remove();
+		}
+
+		while (true) {
+			let row = this.hRow.pop();
+
+			if (!row) {
+				break;
+			}
+
+			row.remove();
+		}
+	}
+
+	_createRow(html) {
+        var table = document.createElement('table');
+        
+        table.innerHTML = html;
+        
+        return table.firstChild.firstChild;
+	}
+
+	_highlightingRow(event) {
 		var row = event.currentTarget;
 
 		row.classList.toggle('highlightingRow');
 	}
 
-	filterRow(event) {
-		clearTimeout(this.keyTimeout);
+	_filterRow(event) {
+		// clearTimeout(this.keyTimeout);
 
-		this.keyTimeout = setTimeout(()=>{
-			console.log(this);
-		}, 1000);
+		// this.keyTimeout = setTimeout(()=>{
+			var flag = true,
+				regex = new RegExp(this.search.value);			
+
+			this.content.forEach((val, ind) => {
+				var hidden = val.every(val => {
+					val = val == null? '' : val + '';
+					
+					return val.search(regex) == -1;
+				});
+
+				this.rows[ind].classList.remove('hide');
+				if (hidden) {
+					this.rows[ind].classList.add('hide');
+				}
+			});
+
+			if (this.rows.every(val => val.classList.contains('hide'))) {
+				this.rows.forEach(val => {
+					val.classList.remove('hide');
+				});
+			}
+		// }, 1000);
 	}
 }
 
@@ -91,6 +162,16 @@ class Data {
 		this._head = [];
 	}
 
+	getHead() {
+		var head = this.head.length == 0? this._head : this.head;
+
+		return head;
+	}
+
+	getData() {
+ 		return this.data;
+ 	}
+
 	static getContainer(type, data) {
 		var data;
 
@@ -101,25 +182,19 @@ class Data {
 		return data;
 	}
 
-	_getHead() {}
+	setHead() {}
+
+	_setHead() {}
+
+	_sort() {}
 }
 
 class DataJson extends Data {
 	constructor(data = {}) {
 		super(data);
 
-		this._getHead();
-		this._sort(this._head);	
-	}
-
-	_getHead() {
-		var data = this._data instanceof Array? this._data[0] : this._data;
-
-		console.log(data);
-
-		for (let key in data) {
-			this._head.push(key);
-		}
+		this._setHead();
+		this._sort();	
 	}
 
 	setHead(head) {
@@ -132,26 +207,25 @@ class DataJson extends Data {
 		this._sort();
  	}
 
+	_setHead() {
+		var data = this._data instanceof Array? this._data[0] : this._data;
+
+		for (let key in data) {
+			this._head.push(key);
+		}
+	}
+
  	_sort() {
  		var head = this.head.length? this.head : this._head;
-
- 		if (head.length) {
- 			this.data = [];
- 		}
 
  		this.data = this._data.map( val => {
  			var out = [];
 
- 			this.head.forEach((title) => {
+ 			head.forEach((title) => {
  				out.push(val[title]);
  			})
 
  			return out;
  		});
  	}
-
- 	getData() {
- 		return this.data;
- 	}
-
 }
