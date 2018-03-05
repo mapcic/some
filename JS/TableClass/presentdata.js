@@ -77,14 +77,14 @@ export default class PresentData {
 		head = `<tr>${head}</tr>`;
 
 		this.hRow.push(this._createRow(head));		
-		this.tHead.append(this.hRow[this.hRow.length-1]);
+		this.tHead.appendChild(this.hRow[this.hRow.length-1]);
 
 		for (let i = 0; i < data.length; i++) {
 			let row = (data[i].map((val) => `<td>${val}</td>`)).join('');
 			row = `<tr>${row}</tr>`;
 
 			this.rows.push(this._createRow(row));		
-			this.tBody.append(this.rows[this.rows.length-1]);
+			this.tBody.appendChild(this.rows[this.rows.length-1]);
 		}
 	}
 
