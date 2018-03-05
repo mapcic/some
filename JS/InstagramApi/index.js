@@ -1,10 +1,10 @@
 import './style.css';
 import * as ia from './instagramApi.js';
-var data = require('./instagram_data.json');
+// var data = require('./instagram_data.json');
 
-console.log(data);
+// console.log(data);
 
-var app = ia.Factory.getApp({json : data});
-
-app.controller.render();
-app.controller.start();
+// var app = ia.Factory.getApp({json : data});
+//
+// app.controller.render();
+// app.controller.start();
