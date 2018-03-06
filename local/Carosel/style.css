@@ -1,0 +1,56 @@
+.gallery {
+    position: relative;
+    width: 100%;
+    height: 200px;
+
+    display: flex;
+}
+
+.gallery .list {
+    overflow: hidden;
+}
+
+.gallery .imgList {
+    display: none;
+}
+
+.slider {
+    display: flex;
+    min-width: 100px;
+}
+
+.gallery .button {
+    width: 100px;
+    min-width: 100px;
+    height: 100%;
+}
+
+.gallery .left {
+    background-color: red;
+}
+
+.gallery .rigth {
+    background-color: blue;
+}
+
+.gallery .img {
+    flex-basis: 100px;
+
+    width: 100%;
+    height: 100%;
+
+    flex-grow: 0;
+    flex-shrink: 0;
+
+    overflow: hidden;
+}
+
+.gallery .flex_wrap {
+    display: flex;
+    flex-basis: 100px;
+}
+
+.img img {
+    width: auto;
+    max-height: 100%;
+}

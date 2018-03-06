@@ -1,0 +1,51 @@
+.gallery {
+    position: relative;
+    width: 100%;
+    height: 200px;
+
+    display: flex;
+}
+
+.gallery .list {
+    overflow: hidden;
+}
+
+.slider {
+    display: flex;
+    width: 100%;
+}
+
+.gallery .button {
+    width: 100px;
+    min-width: 100px;
+    height: 100%;
+}
+
+.gallery .left {
+    background-color: red;
+}
+
+.gallery .rigth {
+    background-color: blue;
+}
+
+.gallery .img {
+    flex-basis: inherit;
+    flex-grow: 1;
+    flex-shrink: 0;
+
+    height: 100%;
+
+    margin: 0 10px;
+
+    overflow: hidden;
+}
+
+.gallery .flex_wrap {
+    display: flex;
+}
+
+.img img {
+    width: auto;
+    max-height: 100%;
+}

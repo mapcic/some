@@ -1,68 +1,10 @@
 <html>
 	<head>
-		<title>
-			TEST
-		</title>
-<style>
-	.gallery {
-		position: relative;
-		width: 100%;
-		height: 200px;
-
-		display: flex;
-	}
-
-	.gallery .list {
-		overflow: hidden;
-	}
-
-	.gallery .imgList {
-		display: none;
-	}
-
-	.slider {
-		display: flex;
-		min-width: 100px;
-	}
-
-	.gallery .button { 
-		width: 100px;
-		min-width: 100px;
-		height: 100%;
-	}
-
-	.gallery .left {
-		background-color: red;
-	}
-
-	.gallery .rigth {
-		background-color: blue;
-	}
-
-	.gallery .img { 
-		flex-basis: 100px;
-
-		width: 100%;
-		height: 100%;
-
-		flex-grow: 0;
-		flex-shrink: 0;
-	}
-
-	.gallery .flex_wrap {
-		display: flex;
-		flex-basis: 100px;
-	}
-
-</style>
+		<title>TEST</title>
+		<link rel="stylesheet" type="text/css" href="test.css">
 	</head>
 <body>
-	<div class="gallery"> 
-		<div class="imgList">
-			<img src="">
-			<img src="">
-		</div>
-
+	<div class="gallery">
 		<div class="slider">
 			<div class="button left"></div>
 
@@ -89,5 +31,35 @@
 			<div class="button rigth"></div>
 		</div>
 	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script>
+		jQuery(document).ready(function($) {
+			const gallery = $( '.gallery' );
+			const slider = gallery.find( '.slider' );
+			const wrap = gallery.find( '.flex_wrap' );
+			const buttons = gallery.find( '.button' );
+
+			$( window ).resize( () => {
+				const wrapWidth = wrap.innerWidth();
+				const slideWidth = !window.matchMedia( "(max-width: 576px)" ).matches? ( wrapWidth - 60 )/3: wrapWidth - 20;
+				wrap.css( 'flex-basis', slideWidth );
+			} ).trigger( 'resize' );
+
+			buttons.on( 'click', event => {
+				const direction = $(event.target).hasClass('rigth')? -1 : +1;
+				const width = direction * +wrap.css('flex-basis').replace('px', '');
+
+				console.log( wrap )
+
+				wrap.css( 'transform',  'translate( 0, 0)')
+
+				wrap.animate({
+					transform: 'translate(1000px, 0)',
+				}, 1000);
+			} );
+
+		});
+	</script>
 </body>
 </html>
