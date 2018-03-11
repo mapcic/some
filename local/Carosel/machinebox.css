@@ -1,0 +1,152 @@
+.machineOn{
+	display: block !important;
+}
+
+.machineOff{
+	display: none !important;
+}
+
+#machineBox{
+    z-index: 9999;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+#machineImgBox, #machineCloseX, #machineLoader{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+#machinePreviosImg, #machineNextImg{
+	position: absolute;
+    top: 0;
+    width: 25%;
+    height: 100%;
+	opacity: 0;
+    background: #dcebf3;
+    overflow: hidden;
+}
+
+#machineNextImg{
+	right: 0;
+}
+
+#machinePreviosImg{
+	left: 0;
+}
+
+#machinePreviosImg:hover, #machineNextImg:hover{
+	opacity: 0.4;
+}
+
+#machineCloseBox{
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    background: black;
+    -moz-border-radius: 15px;
+	-webkit-border-radius: 15px; 
+    border-radius: 17px;
+    border-width: 3px;
+    color: white;
+    border-style: solid;
+}
+
+#machineCloseX{
+    width: 11px;
+    height: 15px;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#machineImgBox img{
+	width: 100%;
+	height: 100%;
+}
+
+#machineDimmer{
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.6;
+}
+
+.machinePreviosT, .machineNextT{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 0;
+    height: 0;
+    border-top: 200px solid transparent;
+    border-bottom: 200px solid transparent;
+}
+
+.machineNextT{
+    right: 10px;
+    border-left: 100px solid #b5a500;
+}
+
+.machinePreviosT{
+    left: 10px;
+    border-right: 100px solid #b5a500;
+}
+
+#machineWrap{
+	position: relative;
+	overflow: hidden;
+    display: inline-block;
+}
+
+#machineWrapDimmer{
+    position: absolute;
+    background: black;
+    opacity: 0.2;
+    width: 100%;
+    height: 100%;
+    top: 0;
+}
+
+@-webkit-keyframes machineLoader {
+	100% {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+
+@-moz-keyframes machineLoader {
+	100% {
+		-moz-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes machineLoader {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+#machineLoader {
+	width: 35px;
+	height: 35px;
+	border: 6px solid #000;
+	border-left-color: #333;
+	border-bottom-color: #555;
+	border-right-color: transparent;
+	border-radius: 100%;
+	-webkit-animation: machineLoader 0.5s infinite linear;
+	-moz-animation: machineLoader 0.5s infinite linear;
+	animation: machineLoader 0.5s infinite linear;
+}
