@@ -1,5 +1,3 @@
-var jQuery = $;
-
 function machineBox() {
     initMachineGB();
     initMachineIB();
@@ -20,7 +18,11 @@ function initMachineGB() {
 
         imgs.filter('.machineImgBox').removeClass('machineImgBox');
         imgs.each(function(ind){
+            var $img = jQuery( this );
             var img = jQuery(this).attr('mpId', ind - 1).attr('mId', ind).attr('mnId', ind + 1);
+
+            if( !$img.attr( 'hd' ) )
+                $img.attr( 'hd', $img.attr( 'src' ) );
         });
         jQuery(imgs[0]).attr('mpId', '');
         jQuery(imgs[imgs.length-1]).attr('mnId', '');
@@ -41,7 +43,10 @@ function initMachineIB() {
 
     imgs.each(function(ind){
         var img = jQuery(this).attr('mpId', ind - 1).attr('mId', ind).attr('mnId', ind + 1);
+        if( !jQuery( this ).attr( 'hd' ) )
+            jQuery( this ).attr( 'hd', jQuery( this ).attr( 'src' ) );
     });
+
     jQuery(imgs[0]).attr('mpId', '');
     jQuery(imgs[imgs.length-1]).attr('mnId', '');
 
